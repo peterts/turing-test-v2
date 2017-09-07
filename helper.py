@@ -17,22 +17,31 @@ def normalize_text(text):
         str: The normalized text.
     """
 
-    return re.sub("[\W_]", "", text).lower().strip()
+    return re.sub("([^\w\s]|_)", "", text, re.IGNORECASE).lower().strip()
 
 
-KEYBOARD = [['q', 'w', 'e,''r', 't', 'y', 'u', 'i', 'o', 'p'],
+KEYBOARD = [['q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p'],
             ['a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l'],
             ['z', 'x', 'c', 'v', 'b', 'n', 'm']]
 
 
 def get_keyboard_neighbors(c):
-    pass
+    for keyboard_row in KEYBOARD:
+        for j, k in enumerate(keyboard_row):
+            if c != k:
+                continue
+            neighbors = []
+            if j > 0:
+                neighbors.append(keyboard_row[j-1])
+            if j < len(keyboard_row) - 1:
+                neighbors.append(keyboard_row[j+1])
+            return neighbors
+    return []
 
 
 def humanize_text(text):
     """
     Add some normal spelling mistakes to the text like:
-    - Whitespace on wrong place
     - Letters swapped
     - Letters replaced with neighboring keyboard letter
 
@@ -46,23 +55,28 @@ def humanize_text(text):
     text_humanized = ""
     i, n = 0, len(text)
     while i < n:
-        if i == 0:
-            continue
+        if i > 0:
+            # Swap letters. Note: Only letters 'inside' a word are considered
+            if i < n - 2 and random() < 0.01:
+                text_humanized += text[i+1] + text[i]
+                i += 2
+                continue
 
-        # Shift the whitespace to the right
-        if text[i] == " " and random() < 0.01:
-            text_humanized = text_humanized[:-1] + " " + text_humanized[-1]
-            i += 1
-            continue
+            # Swap letter with letter close on keyboard
+            if text[i] != " " and random() < 0.01:
+                keyboard_neighbors = get_keyboard_neighbors(text[i])
+                if len(keyboard_neighbors) == 1 or random() < 0.5:
+                    text_humanized += keyboard_neighbors[0]
+                else:
+                    text_humanized += keyboard_neighbors[1]
+                i += 1
+                continue
 
-        # Swap letters. Note: Only letters 'inside' a word are considered
-        if text[i-1] != " " and i < n-2 and text[i+2] != " " and random() < 0.01:
-            text_humanized += text[i+1] + text[i]
-            i += 2
-            continue
+        text_humanized += text[i]
+        i += 1
+    return text_humanized
 
-        # Swap letter with letter close on keyboard
-        if text[i] != " " and random() < 0.01:
+
 
 
 
