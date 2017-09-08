@@ -5,6 +5,8 @@ from cleverwrap import CleverWrap
 import os
 from time import time, sleep
 from random import random
+import socket
+
 
 CLEVERBOT_API_KEY_VAR = "CLEVERBOT_API_KEY"
 
@@ -74,8 +76,6 @@ class Tester(Bottle):
         else:
             self.writing_speed = 0.15 + random() * 0.2
         print(info_message("Writing speed estimated to {:.3f} characters/sec".format(self.writing_speed)))
-
-        print(info_message("Waiting for connection from subject..."))
 
     def start_new_round(self):
         """
@@ -176,4 +176,6 @@ class Tester(Bottle):
 
 if __name__ == '__main__':
     tester = Tester()
+    print(info_message("Starting Turning Test Server on {}".format(socket.gethostbyname(socket.gethostname()))))
+    print(info_message("Waiting for connection from subject..."))
     tester.run(host='localhost', port=PORT, quiet=True)
