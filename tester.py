@@ -149,6 +149,9 @@ class Tester(Bottle):
             # Normalize and humanize the text
             bot_reply = humanize_text(normalize_text(bot_reply))
 
+            # Add a thinking break
+            sleep(0.5)
+
             # Add a delay to the message sending in case the bot responded
             # too fast
             estimated_writing_time = len(bot_reply) * self.writing_speed
