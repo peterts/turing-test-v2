@@ -1,5 +1,5 @@
 from config import *
-from helper import chat_tag, info_message, get_header
+from helper import chat_tag, info_message, get_header, get_chat_line_separator
 from http.client import HTTPConnection
 import socket
 import time
@@ -209,6 +209,7 @@ class Subject:
             # Start new round
             while True:
                 self._start_new_round()
+                print(get_chat_line_separator())
                 while self.n_questions_left > 0:
                     # Read message
                     message = input(chat_tag(DISPLAY_NAME_YOU))
@@ -218,14 +219,17 @@ class Subject:
                         command_was_guess = self._execute_command(message)
                         if command_was_guess:
                             break
+                        print(get_chat_line_separator())
                     # Else, send the message to the tester
                     else:
                         self._send_chat_message(message)
                         print(chat_tag(DISPLAY_NAME_OTHER) + self._receive_message())
+                        print(get_chat_line_separator())
                         self.n_questions_left -= 1
                 if self.n_questions_left == 0:
                     print(info_message("No questions left. Yoy now need to make a guess."))
                 self._make_guess()
+                print(get_chat_line_separator())
                 if 'y' not in input("Start new round (y/N): "):
                     break
 

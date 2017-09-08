@@ -1,6 +1,6 @@
 from bottle import Bottle, request
 from config import *
-from helper import chat_tag, info_message, normalize_text, humanize_text
+from helper import chat_tag, info_message, normalize_text, humanize_text, get_chat_line_separator
 from cleverwrap import CleverWrap
 import os
 from time import time, sleep
@@ -71,6 +71,7 @@ class Tester(Bottle):
         # Estimate writing speed
         # If false, a random writing speed will be chosen
         # The writing speed is in chars/sec
+        print(get_chat_line_separator())
         if 'y' in input("Estimate writing speed (y/N): "):
             self.writing_speed = min(estimate_writing_speed(), 0.35)
         else:
@@ -86,6 +87,7 @@ class Tester(Bottle):
         """
 
         # Get the tester type
+        print(get_chat_line_separator())
         print(info_message("New round started by the user."))
         tester_type = input("Will the bot or you be answering the questions ({}/{}): ".format(TESTER_BOT, TESTER_HUMAN))
         while tester_type not in [TESTER_HUMAN, TESTER_BOT]:
@@ -108,6 +110,8 @@ class Tester(Bottle):
         """
         Inform the tester that the previous game was ended.
         """
+
+        print(get_chat_line_separator())
         print(info_message("Current game ended. Waiting for new game to start..."))
         return "Ok"
 
@@ -120,6 +124,7 @@ class Tester(Bottle):
         """
 
         guess_tester_type =  request.body.read().decode()
+        print(get_chat_line_separator())
         print(info_message("The human guess that you're a {}".format(guess_tester_type)))
         print(info_message("Waiting for a new round to start..."))
         if guess_tester_type == self.tester_type:
@@ -136,6 +141,7 @@ class Tester(Bottle):
         """
 
         message_received = request.body.read().decode()
+        print(get_chat_line_separator())
         print(chat_tag(DISPLAY_NAME_OTHER) + message_received)
 
         # Get reply for the message
@@ -173,6 +179,7 @@ class Tester(Bottle):
         """
 
         host = request.body.read().decode()
+        print(get_chat_line_separator())
         print(info_message("Host {} just connected".format(host)))
         return "Successfully connected"
 
@@ -186,12 +193,16 @@ def start_server():
     host = None
     while True:
         try:
-            host = input("IP to host on: ")
+            print(get_chat_line_separator())
+            host = input("IP to host on (nothing for localhost): ").strip()
+            if not host:
+                host = "localhost"
             print(info_message("Starting Turning Test Server on {}".format(host)))
             print(info_message("Waiting for connection from subject..."))
             tester.run(host=host, port=PORT, quiet=True)
         except socket.gaierror:
             print(info_message("Invalid host '{}'".format(host)))
+
 
 if __name__ == '__main__':
     start_server()

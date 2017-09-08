@@ -94,7 +94,8 @@ def get_header():
     return header
 
 
-
+def get_chat_line_separator():
+    return "-"*70
 
 
 
