@@ -14,18 +14,23 @@ def connect_to_tester():
         HTTPConnection: A connection to the tester
     """
 
-    # Get the host
-    host = input("Please provide the IP of the host (input nothing for localhost): ").strip()
-    if not host:
-        host = "localhost"
+    while True:
+        try:
+            # Get the host
+            host = input("Please provide the IP of the host (input nothing for localhost): ").strip()
+            if not host:
+                host = "localhost"
 
-    # Connect
-    print(info_message("Connecting to tester..."))
-    connection = HTTPConnection(host, PORT)
+            # Connect
+            print(info_message("Connecting to tester..."))
+            connection = HTTPConnection(host, PORT)
 
-    # Inform the tester about the connection
-    connection.request('POST', ROUTE_CONNECT_INFO, socket.gethostbyname(socket.gethostname()))
-    print(info_message(connection.getresponse().read().decode()))
+            # Inform the tester about the connection
+            connection.request('POST', ROUTE_CONNECT_INFO, socket.gethostbyname(socket.gethostname()))
+            print(info_message(connection.getresponse().read().decode()))
+            break
+        except socket.gaierror:
+            print(info_message("Invalid host '{}'".format(host)))
 
     return connection
 

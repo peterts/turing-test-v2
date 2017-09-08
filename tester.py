@@ -72,7 +72,7 @@ class Tester(Bottle):
         # If false, a random writing speed will be chosen
         # The writing speed is in chars/sec
         if 'y' in input("Estimate writing speed (y/N): "):
-            self.writing_speed = estimate_writing_speed()
+            self.writing_speed = min(estimate_writing_speed(), 0.35)
         else:
             self.writing_speed = 0.15 + random() * 0.2
         print(info_message("Writing speed estimated to {:.3f} characters/sec".format(self.writing_speed)))
@@ -176,6 +176,7 @@ class Tester(Bottle):
 
 if __name__ == '__main__':
     tester = Tester()
-    print(info_message("Starting Turning Test Server on {}".format(socket.gethostbyname(socket.gethostname()))))
+    host = socket.gethostbyname(socket.gethostname())
+    print(info_message("Starting Turning Test Server on {}".format(host)))
     print(info_message("Waiting for connection from subject..."))
-    tester.run(host='localhost', port=PORT, quiet=True)
+    tester.run(host=host, port=PORT, quiet=True)
