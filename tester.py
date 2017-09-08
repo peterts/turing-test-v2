@@ -174,9 +174,21 @@ class Tester(Bottle):
         return "Successfully connected"
 
 
-if __name__ == '__main__':
+def start_server():
+    """
+    Start the Turing Test Server.
+    """
+
     tester = Tester()
-    host = socket.gethostbyname(socket.gethostname())
-    print(info_message("Starting Turning Test Server on {}".format(host)))
-    print(info_message("Waiting for connection from subject..."))
-    tester.run(host=host, port=PORT, quiet=True)
+    host = None
+    while True:
+        try:
+            host = input("IP to host on: ")
+            print(info_message("Starting Turning Test Server on {}".format(host)))
+            print(info_message("Waiting for connection from subject..."))
+            tester.run(host=host, port=PORT, quiet=True)
+        except socket.gaierror:
+            print(info_message("Invalid host '{}'".format(host)))
+
+if __name__ == '__main__':
+    start_server()
