@@ -186,7 +186,7 @@ class Subject:
         Display the current points for the game.
         """
 
-        print(info_message("Current score: " + str(self._compute_score())))
+        print(info_message("Current score: {:.2f}".format(self._compute_score())))
 
     def _quit(self):
         """
@@ -233,7 +233,7 @@ class Subject:
                 if 'y' not in input("Start new round (y/N): "):
                     break
 
-            print(info_message("Game ended. Your final score is: {} out of 100".format(self._compute_score())))
+            print(info_message("Game ended. Your final score is: {:.2f} out of 100.0".format(self._compute_score())))
             self.connection.request('POST', ROUTE_ENDED_GAME, "")
             self._receive_message()
             if 'y' not in input("Start new game (y/N): "):
