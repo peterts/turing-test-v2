@@ -57,6 +57,7 @@ class Tester(Bottle):
         # Connect to the bot
         self.bot = connect_to_cleverbot()
         print(info_message("Successfully connected to cleverbot"))
+        self.conv = self.bot.new_conversation()
 
         # Set up the routes.
         self.route(ROUTE_INBOX, method='POST',
@@ -109,7 +110,7 @@ class Tester(Bottle):
         self.tester_type = tester_type
 
         # Reset the bot
-        self.bot.reset()
+        self.conv.reset()
 
         return "New round ready"
 
@@ -156,7 +157,7 @@ class Tester(Bottle):
         if self.tester_type == TESTER_BOT:
             # Get the reply from the bot
             t_start = time()
-            bot_reply = self.bot.say(message_received)
+            bot_reply = self.conv.say(message_received)
             t = time() - t_start
 
             # Normalize and humanize the text
