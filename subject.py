@@ -21,7 +21,7 @@ def connect_to_tester():
                 "Please provide the IP of the host (input nothing for localhost): ").strip()
             if not host:
                 host = "localhost"
-            port = input("Port to host on (nothing for {})".format(PORT))
+            port = input("Port to host on (nothing for {}): ".format(PORT))
             if not port:
                 port = PORT
 

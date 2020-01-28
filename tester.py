@@ -205,7 +205,7 @@ def start_server():
             host = input("IP to host on (nothing for localhost): ").strip()
             if not host:
                 host = "localhost"
-            port = input("Port to host on (nothing for {})".format(PORT))
+            port = input("Port to host on (nothing for {}): ".format(PORT))
             if not port:
                 port = PORT
 
