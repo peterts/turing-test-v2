@@ -17,23 +17,27 @@ def connect_to_tester():
     while True:
         try:
             # Get the host
-            host = input("Please provide the IP of the host (input nothing for localhost): ").strip()
+            host = input(
+                "Please provide the IP of the host (input nothing for localhost): ").strip()
             if not host:
                 host = "localhost"
+            port = input("Port to host on (nothing for {}): ".format(PORT))
+            if not port:
+                port = PORT
 
             # Connect
             print(info_message("Connecting to tester..."))
-            connection = HTTPConnection(host, PORT)
+            connection = HTTPConnection(host, port)
 
             # Inform the tester about the connection
-            connection.request('POST', ROUTE_CONNECT_INFO, socket.gethostbyname(socket.gethostname()))
+            connection.request('POST', ROUTE_CONNECT_INFO,
+                               socket.gethostbyname(socket.gethostname()))
             print(info_message(connection.getresponse().read().decode()))
             break
         except socket.gaierror:
             print(info_message("Invalid host '{}'".format(host)))
 
     return connection
-
 
 
 class Subject:
@@ -71,7 +75,8 @@ class Subject:
 
         if command == '--guess':
             if self.n_questions_left == MAX_QUESTIONS:
-                print(info_message("You need to ask at least one question before making a guess."))
+                print(info_message(
+                    "You need to ask at least one question before making a guess."))
                 return False
             else:
                 return True
@@ -158,11 +163,14 @@ class Subject:
         Guess whether the tester is a bot or a human.
         """
 
-        guess_tester_type = input("What do you think the tester is ({}/{}): ".format(TESTER_BOT, TESTER_HUMAN))
+        guess_tester_type = input(
+            "What do you think the tester is ({}/{}): ".format(TESTER_BOT, TESTER_HUMAN))
         while guess_tester_type not in [TESTER_HUMAN, TESTER_BOT]:
-            guess_tester_type = input("{} is not a valid tester type, select either {} or {}: ".format(guess_tester_type, TESTER_BOT, TESTER_HUMAN))
+            guess_tester_type = input("{} is not a valid tester type, select either {} or {}: ".format(
+                guess_tester_type, TESTER_BOT, TESTER_HUMAN))
 
-        print(info_message("You guessed {}. Waiting for response...".format(guess_tester_type)))
+        print(info_message(
+            "You guessed {}. Waiting for response...".format(guess_tester_type)))
         self.connection.request('POST', ROUTE_CHECK_GUESS, guess_tester_type)
         result = self._receive_message()
 
@@ -179,14 +187,16 @@ class Subject:
         Display the number of questions left in the current round.
         """
 
-        print(info_message("Number of questions left in this round: " + str(self.n_questions_left)))
+        print(info_message("Number of questions left in this round: " +
+                           str(self.n_questions_left)))
 
     def _display_score(self):
         """
         Display the current points for the game.
         """
 
-        print(info_message("Current score: {:.2f}".format(self._compute_score())))
+        print(info_message(
+            "Current score: {:.2f}".format(self._compute_score())))
 
     def _quit(self):
         """
@@ -223,17 +233,20 @@ class Subject:
                     # Else, send the message to the tester
                     else:
                         self._send_chat_message(message)
-                        print(chat_tag(DISPLAY_NAME_OTHER) + self._receive_message())
+                        print(chat_tag(DISPLAY_NAME_OTHER) +
+                              self._receive_message())
                         print(get_chat_line_separator())
                         self.n_questions_left -= 1
                 if self.n_questions_left == 0:
-                    print(info_message("No questions left. Yoy now need to make a guess."))
+                    print(info_message(
+                        "No questions left. Yoy now need to make a guess."))
                 self._make_guess()
                 print(get_chat_line_separator())
                 if 'y' not in input("Start new round (y/N): "):
                     break
 
-            print(info_message("Game ended. Your final score is: {:.2f} out of 100.0".format(self._compute_score())))
+            print(info_message("Game ended. Your final score is: {:.2f} out of 100.0".format(
+                self._compute_score())))
             self.connection.request('POST', ROUTE_ENDED_GAME, "")
             self._receive_message()
             if 'y' not in input("Start new game (y/N): "):

@@ -1,2 +1,2 @@
 bottle==0.12.13
-cleverwrap==0.2.3.6
+cleverwrap==0.3.0.2

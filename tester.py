@@ -57,11 +57,15 @@ class Tester(Bottle):
         # Connect to the bot
         self.bot = connect_to_cleverbot()
         print(info_message("Successfully connected to cleverbot"))
+        self.conv = self.bot.new_conversation()
 
         # Set up the routes.
-        self.route(ROUTE_INBOX, method='POST', callback=self.receive_and_send_message)
-        self.route(ROUTE_CONNECT_INFO, method='POST', callback=self.has_connected)
-        self.route(ROUTE_NEW_ROUND, method='POST', callback=self.start_new_round)
+        self.route(ROUTE_INBOX, method='POST',
+                   callback=self.receive_and_send_message)
+        self.route(ROUTE_CONNECT_INFO, method='POST',
+                   callback=self.has_connected)
+        self.route(ROUTE_NEW_ROUND, method='POST',
+                   callback=self.start_new_round)
         self.route(ROUTE_CHECK_GUESS, method='POST', callback=self.check_guess)
         self.route(ROUTE_ENDED_GAME, method='POST', callback=self.game_ended)
 
@@ -76,7 +80,8 @@ class Tester(Bottle):
             self.writing_speed = min(estimate_writing_speed(), 0.35)
         else:
             self.writing_speed = 0.15 + random() * 0.2
-        print(info_message("Writing speed estimated to {:.3f} characters/sec".format(self.writing_speed)))
+        print(info_message(
+            "Writing speed estimated to {:.3f} characters/sec".format(self.writing_speed)))
 
     def start_new_round(self):
         """
@@ -89,12 +94,15 @@ class Tester(Bottle):
         # Get the tester type
         print(get_chat_line_separator())
         print(info_message("New round started by the user."))
-        tester_type = input("Will the bot or you be answering the questions ({}/{}): ".format(TESTER_BOT, TESTER_HUMAN))
+        tester_type = input(
+            "Will the bot or you be answering the questions ({}/{}): ".format(TESTER_BOT, TESTER_HUMAN))
         while tester_type not in [TESTER_HUMAN, TESTER_BOT]:
-            tester_type = input("'{}' is not a valid tester type, select either {} or {}: ".format(tester_type, TESTER_BOT, TESTER_HUMAN))
+            tester_type = input("'{}' is not a valid tester type, select either {} or {}: ".format(
+                tester_type, TESTER_BOT, TESTER_HUMAN))
 
         if tester_type == TESTER_BOT:
-            print(info_message("The bot will be answering the questions. Sit back and relax!"))
+            print(info_message(
+                "The bot will be answering the questions. Sit back and relax!"))
         if tester_type == TESTER_HUMAN:
             print(info_message("You will be answering the questions. Good luck."))
         print(info_message("Waiting for first message..."))
@@ -102,7 +110,7 @@ class Tester(Bottle):
         self.tester_type = tester_type
 
         # Reset the bot
-        self.bot.reset()
+        self.conv.reset()
 
         return "New round ready"
 
@@ -123,7 +131,7 @@ class Tester(Bottle):
             str: Whether or not the result was correct.
         """
 
-        guess_tester_type =  request.body.read().decode()
+        guess_tester_type = request.body.read().decode()
         print(get_chat_line_separator())
         print(info_message("The human guess that you're a {}".format(guess_tester_type)))
         print(info_message("Waiting for a new round to start..."))
@@ -149,7 +157,7 @@ class Tester(Bottle):
         if self.tester_type == TESTER_BOT:
             # Get the reply from the bot
             t_start = time()
-            bot_reply = self.bot.say(message_received)
+            bot_reply = self.conv.say(message_received)
             t = time() - t_start
 
             # Normalize and humanize the text
@@ -197,9 +205,14 @@ def start_server():
             host = input("IP to host on (nothing for localhost): ").strip()
             if not host:
                 host = "localhost"
-            print(info_message("Starting Turning Test Server on {}".format(host)))
+            port = input("Port to host on (nothing for {}): ".format(PORT))
+            if not port:
+                port = PORT
+
+            print(info_message(
+                "Starting Turing Test Server on {}:{}".format(host, port)))
             print(info_message("Waiting for connection from subject..."))
-            tester.run(host=host, port=PORT, quiet=True)
+            tester.run(host=host, port=port, quiet=True)
         except socket.gaierror:
             print(info_message("Invalid host '{}'".format(host)))
 

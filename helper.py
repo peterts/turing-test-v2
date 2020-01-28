@@ -58,22 +58,25 @@ def humanize_text(text):
 
     text_humanized = ""
     i, n = 0, len(text)
+    swaps = 0
     while i < n:
         if i > 0:
             # Swap letters. Note: Only letters 'inside' a word are considered
-            if i < n - 2 and random() < 0.005:
+            if i < n - 2 and random() < 0.005 and swaps < 2:
                 text_humanized += text[i+1] + text[i]
                 i += 2
+                swaps += 1
                 continue
 
             # Swap letter with letter close on keyboard
-            if text[i] != " " and random() < 0.005:
+            if text[i] != " " and random() < 0.005 and swaps < 2:
                 keyboard_neighbors = get_keyboard_neighbors(text[i])
                 if len(keyboard_neighbors) == 1 or random() < 0.5:
                     text_humanized += keyboard_neighbors[0]
                 else:
                     text_humanized += keyboard_neighbors[1]
                 i += 1
+                swaps += 1
                 continue
 
         text_humanized += text[i]
